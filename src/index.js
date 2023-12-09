@@ -1,1 +1,92 @@
+import Notiflix from 'notiflix';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { fetchPhoto } from './service/pixabay-api';
+import { createMarkup } from './service/render';
+
+
+export const refs = {
+  searchForm: document.querySelector('.search-form'),
+  gallery: document.querySelector('.gallery'),
+  loadMoreBtn: document.querySelector('.load-more'),
+};
+
+const perPage = 40;
+let page = 1;
+let keyOfSearchPhoto = '';
+
+refs.loadMoreBtn.classList.add('is-hidden');
+refs.searchForm.addEventListener('submit', onSearch);
+
+const options = {
+  position: 'center-bottom',
+  distance: '30px',
+  borderRadius: '5px',
+  opacity: 0.9,
+  timeout: 8000,
+  clickToClose: true,
+  cssAnimationStyle: 'zoom',
+};
+
+
+function onSearch(event) {
+  event.preventDefault();
+  page = 1;
+  refs.gallery.innerHTML = '';
+  const { searchQuery } = event.currentTarget.elements;
+  keyOfSearchPhoto = searchQuery.value.trim().toLowerCase();
+
+  if (keyOfSearchPhoto === '') {
+    Notiflix.Notify.info('Please, enter parameters for search');
+    return;
+  }
+
+  fetchPhoto(keyOfSearchPhoto, page, perPage)
+    .then(data => {
+      const searchResults = data.hits;
+      if (data.totalHits === 0) {
+        Notify.failure(`Sorry, there are no images matching your request. Please try again`, options);
+      } else {
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`);
+        createMarkup(searchResults);
+      }
+      if (data.totalHits > perPage) {
+        refs.loadMoreBtn.classList.remove('is-hidden');
+        window.addEventListener('scroll', onInfiniteScroll);
+      }
+    })
+    .catch(onFetchError);
+
+  refs.loadMoreBtn.addEventListener('click', onLoadMoreClick);
+
+  event.currentTarget.reset();
+}
+
+function onLoadMoreClick() {
+  page += 1;
+  fetchPhoto(keyOfSearchPhoto, page, perPage)
+    .then(data => {
+      const searchResults = data.hits;
+      const numberOfLastPage = Math.ceil(data.totalHits / perPage);
+
+      createMarkup(searchResults);
+      if (page === numberOfLastPage) {
+        refs.loadMoreBtn.classList.add('is-hidden');
+        Notify.info(`Sorry, you have reached the end of the search results`, options);
+        refs.loadMoreBtn.removeEventListener('click', onLoadMoreClick);
+        window.removeEventListener('scroll', onInfiniteScroll);
+      }
+    })
+    .catch(onFetchError);
+}
+
+function onFetchError() {
+  Notify.failure(`Oops! Something went wrong. Please, try again.`, options);
+}
+function onInfiniteScroll() {
+  if (
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight
+  ) {
+    onLoadMoreClick();
+  }
+}
