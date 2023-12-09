@@ -17,17 +17,6 @@ let keyOfSearchPhoto = '';
 refs.loadMoreBtn.classList.add('is-hidden');
 refs.searchForm.addEventListener('submit', onSearch);
 
-const options = {
-  position: 'center-bottom',
-  distance: '30px',
-  borderRadius: '5px',
-  opacity: 0.9,
-  timeout: 8000,
-  clickToClose: true,
-  cssAnimationStyle: 'zoom',
-};
-
-
 function onSearch(event) {
   event.preventDefault();
   page = 1;
@@ -44,7 +33,7 @@ function onSearch(event) {
     .then(data => {
       const searchResults = data.hits;
       if (data.totalHits === 0) {
-        Notify.failure(`Sorry, there are no images matching your request. Please try again`, options);
+        Notiflix.Notify.failure('Sorry, there are no images matching your request. Please try again');
       } else {
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`);
         createMarkup(searchResults);
@@ -57,7 +46,6 @@ function onSearch(event) {
     .catch(onFetchError);
 
   refs.loadMoreBtn.addEventListener('click', onLoadMoreClick);
-
   event.currentTarget.reset();
 }
 
@@ -69,10 +57,10 @@ function onLoadMoreClick() {
       const numberOfLastPage = Math.ceil(data.totalHits / perPage);
 
       createMarkup(searchResults);
-      if (page === numberOfLastPage) {
-        refs.loadMoreBtn.classList.add('is-hidden');
-        Notify.info(`Sorry, you have reached the end of the search results`, options);
+      if (page === numberOfLastPage) {        
+        Notiflix.Notify.info('Sorry, you have reached the end of the search results');
         refs.loadMoreBtn.removeEventListener('click', onLoadMoreClick);
+        refs.loadMoreBtn.classList.add('is-hidden');
         window.removeEventListener('scroll', onInfiniteScroll);
       }
     })
@@ -80,7 +68,7 @@ function onLoadMoreClick() {
 }
 
 function onFetchError() {
-  Notify.failure(`Oops! Something went wrong. Please, try again.`, options);
+  Notiflix.Notify.failure('Oops! Something went wrong. Please, try again.');
 }
 function onInfiniteScroll() {
   if (
