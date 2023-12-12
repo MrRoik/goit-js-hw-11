@@ -37,8 +37,12 @@ function onSearch(event) {
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`);
         createMarkup(searchResults);
       }
-      if (data.totalHits > perPage) {
+      if (data.totalHits > perPage) { // Тут правильно! По замовчуванню у мене кнопка видалена! Тому коли у мене тотал більший за 40, то кнопка з'являється!
         refs.loadMoreBtn.classList.remove('is-hidden');
+        //window.addEventListener('scroll', onInfiniteScroll);
+      }
+      if (data.totalHits < perPage) { // додав перевірку якщо тотал манший, вивів інфо!.
+        Notiflix.Notify.info('Sorry, you have reached the end of the search results');
         //window.addEventListener('scroll', onInfiniteScroll);
       }
     })
