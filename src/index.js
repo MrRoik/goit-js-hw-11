@@ -41,7 +41,7 @@ function onSearch(event) {
         refs.loadMoreBtn.classList.remove('is-hidden');
         //window.addEventListener('scroll', onInfiniteScroll);
       }
-      if (data.totalHits < perPage) { // додав перевірку якщо тотал манший, вивів інфо!.
+      if (data.totalHits > 0 && data.totalHits < perPage) { // додав перевірку якщо тотал манший, вивів інфо!.
         Notiflix.Notify.info('Sorry, you have reached the end of the search results');
         //window.addEventListener('scroll', onInfiniteScroll);
       }
