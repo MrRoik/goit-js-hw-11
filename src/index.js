@@ -1,5 +1,4 @@
 import Notiflix from 'notiflix';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { fetchPhoto } from './service/pixabay-api';
 import { createMarkup } from './service/render';
 
@@ -40,7 +39,7 @@ function onSearch(event) {
       }
       if (data.totalHits > perPage) {
         refs.loadMoreBtn.classList.remove('is-hidden');
-        window.addEventListener('scroll', onInfiniteScroll);
+        //window.addEventListener('scroll', onInfiniteScroll);
       }
     })
     .catch(onFetchError);
@@ -61,7 +60,7 @@ function onLoadMoreClick() {
         Notiflix.Notify.info('Sorry, you have reached the end of the search results');
         refs.loadMoreBtn.removeEventListener('click', onLoadMoreClick);
         refs.loadMoreBtn.classList.add('is-hidden');
-        window.removeEventListener('scroll', onInfiniteScroll);
+        //window.removeEventListener('scroll', onInfiniteScroll);
       }
     })
     .catch(onFetchError);
@@ -70,11 +69,11 @@ function onLoadMoreClick() {
 function onFetchError() {
   Notiflix.Notify.failure('Oops! Something went wrong. Please, try again.');
 }
-function onInfiniteScroll() {
-  if (
-    window.innerHeight + window.scrollY >=
-    document.documentElement.scrollHeight
-  ) {
-    onLoadMoreClick();
-  }
-}
+//function onInfiniteScroll() {
+//  if (
+//    window.innerHeight + window.scrollY >=
+//    document.documentElement.scrollHeight
+//  ) {
+//    onLoadMoreClick();
+//  }
+//}
